@@ -27,6 +27,7 @@ func receive(w http.ResponseWriter, r *http.Request) {
 
 	defer func() {
 		if err != nil {
+			fmt.Println(err)
 			fmt.Fprintf(w, "err: %v\n", err)
 			fmt.Fprintf(w, "%s\n", clientUsage)
 		} else {
@@ -69,7 +70,11 @@ func receive(w http.ResponseWriter, r *http.Request) {
 
 func writeFile(filename string, content []byte) error {
 	filename = filepath.Join(outputDir, filename)
-	return ioutil.WriteFile(filename, content, 0666)
+	err := ioutil.WriteFile(filename, content, 0666)
+	if err == nil {
+		fmt.Printf("received file %s, with %d bytes\n", filename, len(content))
+	}
+	return err
 }
 
 func main() {
