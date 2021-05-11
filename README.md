@@ -1,6 +1,14 @@
 
 a file upload server and ngrok like public ip/dns
 
+## TODO
+
+1. upload cmd...
+1. split file
+1. websocket support??? ngork like???
+1. data encryption
+
+
 ## localtunnel
 
 ### setup
