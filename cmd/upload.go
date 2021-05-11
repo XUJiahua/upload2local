@@ -78,6 +78,6 @@ var uploadCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(uploadCmd)
 
-	uploadCmd.Flags().Int64VarP(&partSize, "size", "s", 1024*100, "split part size in bytes")
+	uploadCmd.Flags().Int64VarP(&partSize, "size", "s", 1000*1000, "split part size in bytes")
 	uploadCmd.Flags().StringVarP(&hostServerURL, "host", "", "", "host server URL")
 }

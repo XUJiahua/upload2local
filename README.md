@@ -10,6 +10,7 @@ Upload files to local from anywhere.
 
 1. data encryption
 2. md5 hash check for file
+3. use a stable free reverse proxy
 
 ## Usage
 

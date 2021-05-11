@@ -141,6 +141,10 @@ func (s Server) complete(w http.ResponseWriter, r *http.Request) {
 	}
 	complete.Filename = rebase(complete.Filename, s.workDir)
 	err = split.Merge(complete.PartFiles, complete.Filename)
+	if err != nil {
+		return
+	}
+	logrus.Infof("merged part files, merged to %s\n", complete.Filename)
 }
 
 func rebase(filename, newDir string) string {
