@@ -1,35 +1,31 @@
 
-a file upload server and ngrok like public ip/dns
+Upload files to local from anywhere.
 
-## TODO
+## features
 
-1. upload cmd...
-1. split file
-1. websocket support??? ngork like???
+1. split big file into smaller pieces, to avoid request size limitation of 3rd reverse proxy (e.g., localtunnel)
+2. use free reverse proxy for accessing server publicly
+
+### TODO
+
 1. data encryption
+2. md5 hash check for file
 
+## Usage
 
-## localtunnel
+```
+```
 
-### setup
+## 3rd reverse proxy
+
+### localtunnel
+
+https://theboroer.github.io/localtunnel-www/
+
 ```
 $ npm install -g localtunnel
-$ lt --port 8090
+$ lt --port 1234
 your url is: https://smooth-dragon-53.loca.lt
 ```
 
-### 413 Request Entity Too Large
-do not support large file...
-
-```
-$ curl -F "data=@/Users/jiahua/Downloads/ngrok-stable-darwin-amd64.zip" https://smooth-dragon-53.loca.lt
-<html>
-<head><title>413 Request Entity Too Large</title></head>
-<body>
-<center><h1>413 Request Entity Too Large</h1></center>
-<hr><center>nginx/1.17.9</center>
-</body>
-</html>
-$ ll ~/Downloads/ngrok-stable-darwin-amd64.zip 
--rw-r--r--@ 1 jiahua  staff    13M May 11 00:56 /Users/jiahua/Downloads/ngrok-stable-darwin-amd64.zip
-```
+go implementation: https://github.com/NoahShen/gotunnelme

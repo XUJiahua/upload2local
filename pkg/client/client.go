@@ -2,9 +2,15 @@ package client
 
 import (
 	"errors"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/levigross/grequests"
+	"github.com/sirupsen/logrus"
 	"github.com/xujiahua/upload2local/pkg/model"
 )
+
+var bypassTunnelReminderHeader = map[string]string{
+	"Bypass-Tunnel-Reminder": "1",
+}
 
 type Client struct {
 	baseURL string
@@ -23,7 +29,10 @@ func (c Client) UploadFile(filename string) error {
 		return err
 	}
 
-	response, err := grequests.Post(url, &grequests.RequestOptions{Files: files})
+	response, err := grequests.Post(url, &grequests.RequestOptions{
+		Files:   files,
+		Headers: bypassTunnelReminderHeader,
+	})
 	if err != nil {
 		return err
 	}
@@ -34,7 +43,8 @@ func (c Client) UploadFile(filename string) error {
 func (c Client) Complete(request *model.CompleteRequest) error {
 	url := c.baseURL + "/complete"
 	response, err := grequests.Post(url, &grequests.RequestOptions{
-		JSON: request,
+		JSON:    request,
+		Headers: bypassTunnelReminderHeader,
 	})
 	if err != nil {
 		return err
@@ -44,6 +54,15 @@ func (c Client) Complete(request *model.CompleteRequest) error {
 }
 
 func responseHelper(response *grequests.Response) error {
+	if logrus.IsLevelEnabled(logrus.DebugLevel) {
+		spew.Dump(response.Bytes())
+	}
+
+	// some errors may get from localtunnel
+	// 404 means tunnel connection is lost
+	// https://github.com/localtunnel/localtunnel/issues/221
+	// 504 gateway timeout
+
 	var resp model.Response
 	err := response.JSON(&resp)
 	if err != nil {

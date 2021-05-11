@@ -15,6 +15,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type Server struct {
@@ -39,6 +40,11 @@ func New(workDir string, port int) (*Server, error) {
 }
 
 func (s Server) receive(w http.ResponseWriter, r *http.Request) {
+	begin := time.Now()
+	defer func() {
+		logrus.Debugf("http/receive took %v seconds\n", time.Now().Sub(begin).Seconds())
+	}()
+
 	var (
 		mediaType string
 		params    map[string]string
@@ -98,6 +104,11 @@ func (s Server) receive(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s Server) complete(w http.ResponseWriter, r *http.Request) {
+	begin := time.Now()
+	defer func() {
+		logrus.Debugf("http/complete took %v seconds\n", time.Now().Sub(begin).Seconds())
+	}()
+
 	var err error
 	var res model.Response
 	defer func() {

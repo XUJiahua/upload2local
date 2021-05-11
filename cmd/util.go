@@ -1,13 +1,13 @@
 package cmd
 
 import (
-	"fmt"
+	"github.com/sirupsen/logrus"
 	"os"
 )
 
 func handleErr(err error) {
 	if err != nil {
-		fmt.Println(err)
+		logrus.Error(err)
 		os.Exit(2)
 	}
 }

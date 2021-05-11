@@ -22,13 +22,20 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"fmt"
+	"github.com/NoahShen/gotunnelme/src/gotunnelme"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/xujiahua/upload2local/pkg/server"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 var inboxDirectory string
 var port int
+var localtunnel bool
 
 // serverCmd represents the server command
 var serverCmd = &cobra.Command{
@@ -36,12 +43,44 @@ var serverCmd = &cobra.Command{
 	Short: "A brief description of your command",
 	Run: func(cmd *cobra.Command, args []string) {
 		if verbose {
+			logrus.SetReportCaller(true)
 			logrus.SetLevel(logrus.DebugLevel)
 		}
 
 		svr, err := server.New(inboxDirectory, port)
 		handleErr(err)
-		handleErr(svr.Start())
+
+		// start server
+		go func() {
+			handleErr(svr.Start())
+		}()
+
+		// start tunnel
+		if localtunnel {
+			go func() {
+				// wait for server start
+				time.Sleep(time.Second)
+
+				t := gotunnelme.NewTunnel()
+				url, err := t.GetUrl("")
+				handleErr(err)
+				fmt.Println(url)
+
+				err = t.CreateTunnel(port)
+				handleErr(err)
+
+				t.StopTunnel()
+			}()
+		}
+
+		signalChan := make(chan os.Signal, 1)
+		signal.Notify(
+			signalChan,
+			syscall.SIGHUP,  // kill -SIGHUP XXXX
+			syscall.SIGINT,  // kill -SIGINT XXXX or Ctrl+c
+			syscall.SIGQUIT, // kill -SIGQUIT XXXX
+		)
+		<-signalChan
 	},
 }
 
@@ -49,4 +88,5 @@ func init() {
 	rootCmd.AddCommand(serverCmd)
 	serverCmd.Flags().StringVarP(&inboxDirectory, "inboxDirectory", "d", "./data", "inbox folder")
 	serverCmd.Flags().IntVarP(&port, "port", "p", 1234, "server port")
+	serverCmd.Flags().BoolVarP(&localtunnel, "localtunnel", "", true, "localtunnel enabled for public access")
 }

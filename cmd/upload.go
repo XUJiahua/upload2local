@@ -23,6 +23,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"github.com/xujiahua/upload2local/pkg/client"
 	"github.com/xujiahua/upload2local/pkg/model"
 	"github.com/xujiahua/upload2local/pkg/split"
@@ -41,6 +42,11 @@ var uploadCmd = &cobra.Command{
 	Use:   "upload",
 	Short: "upload local file to server",
 	Run: func(cmd *cobra.Command, args []string) {
+		if verbose {
+			logrus.SetReportCaller(true)
+			logrus.SetLevel(logrus.DebugLevel)
+		}
+
 		if len(args) == 0 {
 			fmt.Println(uploadUsage)
 			return
@@ -52,17 +58,19 @@ var uploadCmd = &cobra.Command{
 			partFiles, err := split.Split(inputFilename, partSize, os.TempDir())
 			handleErr(err)
 
-			fmt.Println(partFiles)
 			for _, part := range partFiles {
+				logrus.Infof("uploading file part %s ...\n", part)
 				err = c.UploadFile(part)
 				handleErr(err)
+				logrus.Debugf("uploaded file part %s \n", part)
 			}
+			logrus.Debugf("finishing file uploading ... \n")
 			err = c.Complete(&model.CompleteRequest{
 				PartFiles: partFiles,
 				Filename:  inputFilename,
 			})
 			handleErr(err)
-			fmt.Printf("file %s uploaded\n", inputFilename)
+			logrus.Infof("file %s uploaded\n", inputFilename)
 		}
 	},
 }
@@ -70,6 +78,6 @@ var uploadCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(uploadCmd)
 
-	uploadCmd.Flags().Int64VarP(&partSize, "size", "s", 1024*1024, "split part size in bytes")
+	uploadCmd.Flags().Int64VarP(&partSize, "size", "s", 1024*100, "split part size in bytes")
 	uploadCmd.Flags().StringVarP(&hostServerURL, "host", "", "", "host server URL")
 }
