@@ -19,10 +19,34 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package main
+package cmd
 
-import "github.com/xujiahua/upload2local/cmd"
+import (
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+	"github.com/xujiahua/upload2local/pkg/server"
+)
 
-func main() {
-	cmd.Execute()
+var inboxDirectory string
+var port int
+
+// serverCmd represents the server command
+var serverCmd = &cobra.Command{
+	Use:   "server",
+	Short: "A brief description of your command",
+	Run: func(cmd *cobra.Command, args []string) {
+		if verbose {
+			logrus.SetLevel(logrus.DebugLevel)
+		}
+
+		svr, err := server.New(inboxDirectory, port)
+		handleErr(err)
+		handleErr(svr.Start())
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(serverCmd)
+	serverCmd.Flags().StringVarP(&inboxDirectory, "inboxDirectory", "d", "./data", "inbox folder")
+	serverCmd.Flags().IntVarP(&port, "port", "p", 1234, "server port")
 }

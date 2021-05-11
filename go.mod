@@ -1,8 +1,10 @@
-module github.com/xujiahua/sharing
+module github.com/xujiahua/upload2local
 
 go 1.16
 
 require (
-	github.com/sirupsen/logrus v1.8.1 // indirect
-	github.com/stretchr/testify v1.7.0 // indirect
+	github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a
+	github.com/sirupsen/logrus v1.8.1
+	github.com/spf13/cobra v1.1.3
+	github.com/stretchr/testify v1.7.0
 )

@@ -19,10 +19,35 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package main
+package cmd
 
-import "github.com/xujiahua/upload2local/cmd"
+import (
+	"fmt"
+	"github.com/spf13/cobra"
+	"github.com/xujiahua/upload2local/pkg/split"
+)
 
-func main() {
-	cmd.Execute()
+var filename string
+var size int64
+
+// testdataCmd represents the testdata command
+var testdataCmd = &cobra.Command{
+	Use:   "testdata",
+	Short: "generate binary data",
+	Run: func(cmd *cobra.Command, args []string) {
+		err := split.GenRandBin(filename, size)
+		fmt.Printf("generate file: %s size: %d\n", filename, size)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Println("ok")
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(testdataCmd)
+
+	testdataCmd.Flags().StringVarP(&filename, "filepath", "f", "hello.bin", "filepath for generated file")
+	testdataCmd.Flags().Int64VarP(&size, "size", "s", 1024, "size in bytes")
 }

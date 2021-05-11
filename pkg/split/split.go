@@ -8,7 +8,6 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
-	"sort"
 )
 
 // base64 chars
@@ -71,7 +70,7 @@ func Split(filename string, partSize int64, outDir string) ([]string, error) {
 		}
 
 		n := partSize
-		if i == l-1 {
+		if i == l-1 && fileInfo.Size()%partSize != 0 {
 			n = fileInfo.Size() % partSize
 		}
 
@@ -90,7 +89,8 @@ func Split(filename string, partSize int64, outDir string) ([]string, error) {
 }
 
 func Merge(filenameList []string, dstFilename string) error {
-	sort.Strings(filenameList)
+	// keep raw order
+	// sort.Strings(filenameList)
 	dstFile, err := os.Create(dstFilename)
 	if err != nil {
 		return err
