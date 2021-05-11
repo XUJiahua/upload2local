@@ -40,7 +40,7 @@ var localtunnel bool
 // serverCmd represents the server command
 var serverCmd = &cobra.Command{
 	Use:   "server",
-	Short: "A brief description of your command",
+	Short: "start server for receiving files",
 	Run: func(cmd *cobra.Command, args []string) {
 		if verbose {
 			logrus.SetReportCaller(true)
@@ -52,6 +52,7 @@ var serverCmd = &cobra.Command{
 
 		// start server
 		go func() {
+			fmt.Printf("local access: http://127.0.0.1:%d\n", port)
 			handleErr(svr.Start())
 		}()
 
@@ -64,7 +65,7 @@ var serverCmd = &cobra.Command{
 				t := gotunnelme.NewTunnel()
 				url, err := t.GetUrl("")
 				handleErr(err)
-				fmt.Println(url)
+				fmt.Println("public access:", url)
 
 				err = t.CreateTunnel(port)
 				handleErr(err)
