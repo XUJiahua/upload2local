@@ -35,7 +35,18 @@ Flags:
 Use "upload2local [command] --help" for more information about a command.
 ```
 
+```
+                 ┌───────────────┐
+┌──────────┐     │               │      ┌────────┐
+│ uploader ├────►│ reverse proxy ├─────►│ server │
+└──────────┘     │ (localtunnel) │      └────────┘
+                 │               │
+                 └───────────────┘
+```
+
 ### server
+
+will create a tunnel to localtunnel.
 
 ```
 $ ./upload2local server   
